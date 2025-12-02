@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Pro - Kalkulator Lengkap</title>
+    <style>
+        :root {
+            --color-bg-primary: rgba(252, 252, 249, 1);
+            --color-bg-secondary: rgba(245, 245, 245, 1);
+            --color-text-primary: rgba(19, 52, 59, 1);
+            --color-text-secondary: rgba(98, 108, 113, 1);
+            --color-primary: rgba(33, 128, 141, 1);
+            --color-primary-hover: rgba(29, 116, 128, 1);
+            --color-error: rgba(192, 21, 47, 1);
+            --color-success: rgba(33, 128, 141, 1);
+            --color-border: rgba(94, 82, 64, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--color-text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calculator-wrapper {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .display-section {
+            background: var(--color-bg-secondary);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--color-border);
+        }
+
+        .result-display {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+            min-height: 18px;
+            word-break: break-all;
+            cursor: text;
+            border: 2px solid transparent;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .result-display:hover {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.08);
+        }
+
+        .result-display:focus {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.12);
+            outline: none;
+        }
+
+        .result-display {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+            min-height: 18px;
+            word-break: break-all;
+            cursor: text;
+            border: 2px solid transparent;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            user-select: text;
+            -webkit-user-select: text;
+            contenteditable: true;
+        }
+
+        .result-display:hover {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.08);
+        }
+
+        .result-display:focus {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.12);
+            outline: none;
+        }
+
+        .main-display {
+            font-size: 48px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            text-align: right;
+            word-break: break-word;
+            min-height: 80px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 20px;
+            background: rgba(33, 128, 141, 0.05);
+            border-radius: 12px;
+            cursor: text;
+            user-select: none;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .main-display:hover {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.1);
+        }
+
+        .main-display:focus {
+            border-color: var(--color-primary);
+            background: rgba(33, 128, 141, 0.15);
+            outline: none;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--color-bg-secondary);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn:hover {
+            background: var(--color-bg-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-operator {
+            background: var(--color-primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn-operator:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn-equals {
+            background: var(--color-success);
+            color: white;
+            font-weight: 600;
+            grid-column: span 2;
+        }
+
+        .btn-equals:hover {
+            background: rgba(33, 128, 141, 0.9);
+        }
+
+        .btn-clear {
+            background: var(--color-error);
+            color: white;
+            font-weight: 600;
+            grid-column: span 2;
+        }
+
+        .btn-clear:hover {
+            background: rgba(192, 21, 47, 0.9);
+        }
+
+        .btn-copy {
+            background: rgba(33, 128, 141, 0.1);
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+            font-weight: 600;
+        }
+
+        .btn-copy:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .history-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .history-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .history-item {
+            background: var(--color-bg-secondary);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(33, 128, 141, 0.1);
+            border-color: var(--color-primary);
+        }
+
+        .history-item-text {
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .history-item-expr {
+            color: var(--color-text-secondary);
+            display: block;
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
+        .history-item-result {
+            color: var(--color-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .history-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: 10px;
+        }
+
+        .history-btn {
+            padding: 6px 10px;
+            font-size: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: var(--color-primary);
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .history-btn:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .history-btn-delete {
+            background: var(--color-error);
+        }
+
+        .history-btn-delete:hover {
+            background: rgba(192, 21, 47, 0.9);
+        }
+
+        .empty-history {
+            text-align: center;
+            color: var(--color-text-secondary);
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        .controls-section {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 10px 12px;
+            font-size: 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-clear-history {
+            background: var(--color-error);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-clear-history:hover {
+            background: rgba(192, 21, 47, 0.9);
+        }
+
+        .copy-feedback {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--color-success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- KALKULATOR UTAMA -->
+        <div class="calculator-wrapper">
+            <div class="display-section">
+                <div class="result-display" id="resultDisplay" contenteditable="true" spellcheck="false"></div>
+                <div class="main-display" id="mainDisplay" contenteditable="true" spellcheck="false">0</div>
+            </div>
+
+            <div class="button-grid">
+                <button class="btn btn-clear" onclick="calculator.clear()">C</button>
+                <button class="btn btn-copy" onclick="calculator.copyResult()">📋 Salin</button>
+                <button class="btn btn-operator" onclick="calculator.appendOperator('/')">&divide;</button>
+                <button class="btn btn-operator" onclick="calculator.appendOperator('*')">&times;</button>
+
+                <button class="btn" onclick="calculator.appendNumber('7')">7</button>
+                <button class="btn" onclick="calculator.appendNumber('8')">8</button>
+                <button class="btn" onclick="calculator.appendNumber('9')">9</button>
+                <button class="btn btn-operator" onclick="calculator.appendOperator('-')">−</button>
+
+                <button class="btn" onclick="calculator.appendNumber('4')">4</button>
+                <button class="btn" onclick="calculator.appendNumber('5')">5</button>
+                <button class="btn" onclick="calculator.appendNumber('6')">6</button>
+                <button class="btn btn-operator" onclick="calculator.appendOperator('+')">+</button>
+
+                <button class="btn" onclick="calculator.appendNumber('1')">1</button>
+                <button class="btn" onclick="calculator.appendNumber('2')">2</button>
+                <button class="btn" onclick="calculator.appendNumber('3')">3</button>
+                <button class="btn" onclick="calculator.appendNumber('.')">.</button>
+
+                <button class="btn" onclick="calculator.appendNumber('0')" style="grid-column: span 2;">0</button>
+                <button class="btn btn-operator" onclick="calculator.toggleSign()">+/−</button>
+                <button class="btn btn-equals" onclick="calculator.calculate()">=</button>
+            </div>
+
+            <div class="controls-section">
+                <button class="btn-small btn-copy" onclick="calculator.copyDisplay()">📋 Salin Display</button>
+                <button class="btn-small btn-copy" onclick="calculator.pasteDisplay()">📌 Tempel</button>
+                <button class="btn-small" style="background: rgba(192, 21, 47, 0.1); color: var(--color-error); border: 2px solid var(--color-error);" onclick="calculator.deleteLastChar()">⌫ Hapus 1</button>
+            </div>
+        </div>
+
+        <!-- RIWAYAT KALKULATOR -->
+        <div class="history-section">
+            <div class="history-title">📊 Riwayat Kalkulator</div>
+            <div class="history-list" id="historyList">
+                <div class="empty-history">Belum ada riwayat kalkulasi</div>
+            </div>
+            <button class="btn-small btn-clear-history" onclick="calculator.clearHistory()">Hapus Semua Riwayat</button>
+        </div>
+    </div>
+
+    <div class="copy-feedback" id="copyFeedback">✓ Disalin ke clipboard</div>
+
+    <script>
+        const calculator = {
+            display: '0',
+            currentValue: 0,
+            previousValue: 0,
+            operation: null,
+            history: [],
+            shouldResetDisplay: false,
+            formatNumber: new Intl.NumberFormat('id-ID', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 10
+            }),
+
+            init() {
+                this.loadHistoryFromStorage();
+                this.updateDisplay();
+                this.setupDisplayEditListener();
+            },
+
+            setupDisplayEditListener() {
+                const displayEl = document.getElementById('mainDisplay');
+                const resultEl = document.getElementById('resultDisplay');
+
+                // Main display listener - smart input handling
+                displayEl.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === '=') {
+                        e.preventDefault();
+                        this.calculate();
+                    } else if (e.key === 'Backspace') {
+                        e.preventDefault();
+                        this.handleBackspaceInDisplay(displayEl);
+                    }
+                });
+
+                displayEl.addEventListener('beforeinput', (e) => {
+                    // Izinkan editing normal (insert, delete, replace)
+                    if (e.inputType === 'insertText') {
+                        const char = e.data;
+                        if (!/[\d.+-/*]/.test(char)) {
+                            e.preventDefault();
+                        }
+                    }
+                });
+
+                displayEl.addEventListener('input', (e) => {
+                    // Ambil teks raw dengan formatting - hapus titik pemisah ribuan saja
+                    let text = e.target.textContent;
+                    let rawValue = text.replace(/\./g, ''); // Hapus pemisah ribuan
+                    
+                    // Pastikan format tetap valid
+                    if (rawValue === '' || rawValue === '-') {
+                        this.display = '0';
+                    } else {
+                        this.display = rawValue;
+                    }
+                    
+                    // Update dengan format pemisah ribuan
+                    this.updateDisplayWithFormat(displayEl);
+                });
+
+                displayEl.addEventListener('blur', () => {
+                    this.shouldResetDisplay = true;
+                });
+
+                // Result display listener - smart input handling
+                resultEl.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const expr = resultEl.textContent.replace(/\./g, '');
+                        this.evaluateExpression(expr);
+                    } else if (e.key === 'Backspace') {
+                        e.preventDefault();
+                        this.handleBackspaceInDisplay(resultEl);
+                    }
+                });
+
+                resultEl.addEventListener('beforeinput', (e) => {
+                    // Izinkan hanya angka, operator, dan titik
+                    if (e.inputType === 'insertText') {
+                        const char = e.data;
+                        if (!/[\d.+\-*/÷×−]/.test(char)) {
+                            e.preventDefault();
+                        }
+                    }
+                });
+
+                resultEl.addEventListener('input', (e) => {
+                    let text = e.target.textContent;
+                    // Hapus pemisah ribuan untuk processing
+                    let rawValue = text.replace(/\./g, '');
+                    // Format dengan pemisah ribuan otomatis
+                    let formatted = this.formatExpressionWithNumbers(rawValue);
+                    if (formatted !== text) {
+                        const selection = window.getSelection();
+                        const cursorPos = selection.focusOffset;
+                        resultEl.textContent = formatted;
+                        // Restore cursor position dengan adjustment
+                        try {
+                            const range = document.createRange();
+                            const sel = window.getSelection();
+                            range.setStart(resultEl.firstChild || resultEl, Math.min(cursorPos, formatted.length));
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        } catch (err) {
+                            this.setCursorAtEnd(resultEl);
+                        }
+                    }
+                });
+
+                resultEl.addEventListener('blur', () => {
+                    if (resultEl.textContent.trim()) {
+                        this.shouldResetDisplay = true;
+                    }
+                });
+            },
+
+            setCursorAtEnd(el) {
+                el.focus();
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.selectNodeContents(el);
+                range.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            },
+
+            deleteLastChar() {
+                const clean = this.display.slice(0, -1);
+                this.display = clean === '' ? '0' : clean;
+                this.updateDisplay();
+            },
+
+            appendNumber(num) {
+                if (this.shouldResetDisplay) {
+                    this.display = num;
+                    this.shouldResetDisplay = false;
+                } else {
+                    if (this.display === '0' && num !== '.') {
+                        this.display = num;
+                    } else if (num === '.' && this.display.includes('.')) {
+                        return;
+                    } else {
+                        this.display += num;
+                    }
+                }
+                this.updateDisplay();
+            },
+
+            appendOperator(op) {
+                if (this.operation !== null && !this.shouldResetDisplay) {
+                    this.calculate();
+                }
+                this.previousValue = parseFloat(this.display);
+                this.operation = op;
+                this.shouldResetDisplay = true;
+                document.getElementById('resultDisplay').textContent = `${this.previousValue} ${op}`;
+            },
+
+            calculate() {
+                if (this.operation === null || this.shouldResetDisplay) {
+                    return;
+                }
+
+                this.currentValue = parseFloat(this.display);
+                const formattedPrev = this.formatDisplayValue(this.previousValue.toString());
+                const formattedCur = this.formatDisplayValue(this.currentValue.toString());
+                const expression = `${formattedPrev} ${this.operation} ${formattedCur}`;
+                let result;
+
+                switch(this.operation) {
+                    case '+': result = this.previousValue + this.currentValue; break;
+                    case '-': result = this.previousValue - this.currentValue; break;
+                    case '*': result = this.previousValue * this.currentValue; break;
+                    case '/': 
+                        if (this.currentValue === 0) {
+                            alert('Tidak bisa membagi dengan 0');
+                            return;
+                        }
+                        result = this.previousValue / this.currentValue; 
+                        break;
+                    default: return;
+                }
+
+                result = Math.round(result * 100000000) / 100000000;
+                this.display = result.toString();
+                this.addToHistory(expression, result);
+                
+                // Set up untuk operasi berikutnya dengan hasil saat ini
+                this.previousValue = result;
+                this.currentValue = result;
+                this.shouldResetDisplay = true;
+                this.updateDisplay();
+            },
+
+            toggleSign() {
+                const num = parseFloat(this.display);
+                this.display = (num * -1).toString();
+                this.updateDisplay();
+            },
+
+            clear() {
+                this.display = '0';
+                this.currentValue = 0;
+                this.previousValue = 0;
+                this.operation = null;
+                this.shouldResetDisplay = false;
+                document.getElementById('resultDisplay').textContent = '';
+                this.updateDisplay();
+            },
+
+            formatDisplayValue(value) {
+                if (value === '0' || value === '') return '0';
+                
+                const num = parseFloat(value);
+                if (isNaN(num)) return value;
+                
+                // Tampilkan desimal jika ada
+                const parts = value.split('.');
+                let integer = parts[0];
+                let decimal = parts[1] ? '.' + parts[1] : '';
+                
+                // Format integer dengan pemisah ribuan (titik)
+                integer = Math.abs(parseInt(integer) || 0).toString();
+                integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                
+                if (value.startsWith('-') && value !== '-0') {
+                    integer = '-' + integer;
+                }
+                
+                return integer + decimal;
+            },
+
+            formatExpressionWithNumbers(expr) {
+                // Format angka-angka dalam ekspresi dengan pemisah ribuan
+                let result = '';
+                let currentNumber = '';
+                
+                for (let char of expr) {
+                    if (/[\d.]/.test(char)) {
+                        currentNumber += char;
+                    } else {
+                        if (currentNumber) {
+                            result += this.formatDisplayValue(currentNumber);
+                            currentNumber = '';
+                        }
+                        result += char;
+                    }
+                }
+                if (currentNumber) {
+                    result += this.formatDisplayValue(currentNumber);
+                }
+                return result;
+            },
+
+            evaluateExpression(expr) {
+                try {
+                    // Hapus pemisah ribuan dan ganti operator
+                    let evalExpr = expr
+                        .replace(/\./g, '') // Hapus pemisah ribuan
+                        .replace(/÷/g, '/')
+                        .replace(/×/g, '*')
+                        .replace(/−/g, '-');
+                    
+                    // Evaluasi ekspresi
+                    const result = eval(evalExpr);
+                    
+                    if (result === Infinity || result === -Infinity || isNaN(result)) {
+                        alert('Hasil tidak valid');
+                        return;
+                    }
+                    
+                    const roundedResult = Math.round(result * 100000000) / 100000000;
+                    this.display = roundedResult.toString();
+                    this.operation = null;
+                    this.shouldResetDisplay = true;
+                    this.addToHistory(expr, roundedResult);
+                    this.updateDisplay();
+                    document.getElementById('resultDisplay').textContent = '';
+                } catch (e) {
+                    alert('Ekspresi tidak valid');
+                }
+            },
+
+            updateDisplay() {
+                const displayEl = document.getElementById('mainDisplay');
+                const formatted = this.formatDisplayValue(this.display);
+                displayEl.textContent = formatted;
+            },
+
+            updateDisplayWithFormat(displayEl) {
+                const selection = window.getSelection();
+                const cursorPos = selection.focusOffset;
+                
+                const formatted = this.formatDisplayValue(this.display);
+                displayEl.textContent = formatted;
+                
+                // Restore cursor position dengan adjustment untuk pemisah
+                try {
+                    const text = formatted;
+                    let adjustedPos = cursorPos;
+                    
+                    // Hitung berapa banyak pemisah ribuan ditambahkan sebelum cursor
+                    const rawDisplay = this.display;
+                    const beforeCursor = rawDisplay.substring(0, cursorPos);
+                    const dotsAddedCount = (beforeCursor.length - beforeCursor.replace(/\./g, '').length);
+                    adjustedPos = cursorPos + dotsAddedCount;
+                    
+                    const range = document.createRange();
+                    const sel = window.getSelection();
+                    if (displayEl.firstChild) {
+                        range.setStart(displayEl.firstChild, Math.min(adjustedPos, text.length));
+                    } else {
+                        range.setStart(displayEl, Math.min(adjustedPos, text.length));
+                    }
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                } catch (err) {
+                    this.setCursorAtEnd(displayEl);
+                }
+            },
+
+            copyResult() {
+                navigator.clipboard.writeText(this.display).then(() => {
+                    this.showFeedback('✓ Hasil disalin ke clipboard');
+                });
+            },
+
+            copyDisplay() {
+                navigator.clipboard.writeText(this.display).then(() => {
+                    this.showFeedback('✓ Display disalin');
+                });
+            },
+
+            pasteDisplay() {
+                navigator.clipboard.readText().then(text => {
+                    if (!isNaN(text) || text.includes('.')) {
+                        this.display = text.trim();
+                        this.updateDisplay();
+                        this.showFeedback('✓ Ditempel dari clipboard');
+                    } else {
+                        alert('Teks di clipboard bukan angka');
+                    }
+                });
+            },
+
+            addToHistory(expression, result) {
+                const timestamp = new Date().toLocaleTimeString('id-ID');
+                const formattedResult = this.formatDisplayValue(result.toString());
+                const entry = {
+                    expression,
+                    result,
+                    displayResult: formattedResult,
+                    timestamp
+                };
+                this.history.unshift(entry);
+                this.saveHistoryToStorage();
+                this.renderHistory();
+            },
+
+            renderHistory() {
+                const historyList = document.getElementById('historyList');
+                if (this.history.length === 0) {
+                    historyList.innerHTML = '<div class="empty-history">Belum ada riwayat kalkulasi</div>';
+                    return;
+                }
+
+                historyList.innerHTML = this.history.map((item, index) => `
+                    <div class="history-item">
+                        <div class="history-item-text">
+                            <span class="history-item-expr">${item.expression}</span>
+                            <span class="history-item-result">= ${item.displayResult}</span>
+                            <small style="color: var(--color-text-secondary); display: block; margin-top: 4px;">${item.timestamp}</small>
+                        </div>
+                        <div class="history-item-actions">
+                            <button class="history-btn" onclick="calculator.useFromHistory(${index})">Pakai</button>
+                            <button class="history-btn" onclick="calculator.copyFromHistory(${index})">Salin</button>
+                            <button class="history-btn history-btn-delete" onclick="calculator.deleteHistory(${index})">Hapus</button>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            useFromHistory(index) {
+                this.display = this.history[index].result.toString();
+                this.shouldResetDisplay = true;
+                this.updateDisplay();
+                this.showFeedback('✓ Hasil ditampilkan');
+            },
+
+            copyFromHistory(index) {
+                const entry = this.history[index];
+                const text = `${entry.expression} = ${entry.result}`;
+                navigator.clipboard.writeText(text).then(() => {
+                    this.showFeedback('✓ Riwayat disalin');
+                });
+            },
+
+            deleteHistory(index) {
+                this.history.splice(index, 1);
+                this.saveHistoryToStorage();
+                this.renderHistory();
+            },
+
+            clearHistory() {
+                if (confirm('Hapus semua riwayat kalkulasi?')) {
+                    this.history = [];
+                    this.saveHistoryToStorage();
+                    this.renderHistory();
+                }
+            },
+
+            saveHistoryToStorage() {
+                // Menggunakan JavaScript variable, bukan localStorage
+                // Data akan tersimpan selama halaman aktif
+            },
+
+            loadHistoryFromStorage() {
+                // Load dari variable memory
+            },
+
+            showFeedback(message) {
+                const feedback = document.getElementById('copyFeedback');
+                feedback.textContent = message;
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 2000);
+            }
+        };
+
+        // Inisialisasi kalkulator
+        window.addEventListener('DOMContentLoaded', () => {
+            calculator.init();
+        });
+
+        // Support keyboard input
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') calculator.appendNumber(e.key);
+            if (e.key === '+') { e.preventDefault(); calculator.appendOperator('+'); }
+            if (e.key === '-') { e.preventDefault(); calculator.appendOperator('-'); }
+            if (e.key === '*') { e.preventDefault(); calculator.appendOperator('*'); }
+            if (e.key === '/') { e.preventDefault(); calculator.appendOperator('/'); }
+            if (e.key === '.') calculator.appendNumber('.');
+            if (e.key === 'Enter') { e.preventDefault(); calculator.calculate(); }
+            if (e.key === 'Backspace') calculator.clear();
+        });
+    </script>
+</body>
+</html>
