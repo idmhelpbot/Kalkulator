@@ -32,16 +32,18 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 480px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr;
+            gap: 16px;
         }
 
-        @media (max-width: 768px) {
+        @media (min-width: 768px) {
             .container {
-                grid-template-columns: 1fr;
+                max-width: 900px;
+                grid-template-columns: 1.1fr 0.9fr;
+                gap: 20px;
             }
         }
 
@@ -49,15 +51,15 @@
             background: white;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
         .display-section {
             background: var(--color-bg-secondary);
-            padding: 15px;
+            padding: 10px;
             border-radius: 12px;
             border: 2px solid var(--color-border);
         }
@@ -65,12 +67,12 @@
         .result-display {
             font-size: 12px;
             color: var(--color-text-secondary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             min-height: 18px;
             word-break: break-all;
             cursor: text;
             border: 2px solid transparent;
-            padding: 8px;
+            padding: 6px 8px;
             border-radius: 8px;
             transition: all 0.2s ease;
             user-select: text;
@@ -88,50 +90,37 @@
             outline: none;
         }
 
-        .result-display {
-            font-size: 12px;
-            color: var(--color-text-secondary);
-            margin-bottom: 8px;
-            min-height: 18px;
-            word-break: break-all;
-            cursor: text;
-            border: 2px solid transparent;
-            padding: 8px;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            user-select: text;
-            -webkit-user-select: text;
-            contenteditable: true;
-        }
-
-        .result-display:hover {
-            border-color: var(--color-primary);
-            background: rgba(33, 128, 141, 0.08);
-        }
-
-        .result-display:focus {
-            border-color: var(--color-primary);
-            background: rgba(33, 128, 141, 0.12);
-            outline: none;
+        .result-display[contenteditable="true"] {
+            white-space: nowrap;
+            overflow-x: auto;
         }
 
         .main-display {
-            font-size: 48px;
+            font-size: 40px;
             font-weight: 600;
             color: var(--color-text-primary);
             text-align: right;
             word-break: break-word;
-            min-height: 80px;
+            min-height: 70px;
             display: flex;
             align-items: flex-end;
             justify-content: flex-end;
-            padding: 20px;
+            padding: 16px;
             background: rgba(33, 128, 141, 0.05);
             border-radius: 12px;
             cursor: text;
             user-select: none;
             border: 2px solid transparent;
             transition: all 0.2s ease;
+            overflow: hidden;
+        }
+
+        .main-display.long {
+            font-size: 26px;
+        }
+
+        .main-display.very-long {
+            font-size: 20px;
         }
 
         .main-display:hover {
@@ -148,11 +137,11 @@
         .button-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn {
-            padding: 16px;
+            padding: 12px;
             font-size: 16px;
             font-weight: 500;
             border: none;
@@ -222,31 +211,31 @@
             background: white;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            max-height: 500px;
+            gap: 12px;
+            max-height: 320px;
             overflow-y: auto;
         }
 
         .history-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--color-text-primary);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             border-bottom: 2px solid var(--color-border);
         }
 
         .history-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .history-item {
             background: var(--color-bg-secondary);
-            padding: 12px;
+            padding: 8px;
             border-radius: 8px;
             border: 1px solid var(--color-border);
             display: flex;
@@ -263,7 +252,7 @@
 
         .history-item-text {
             flex: 1;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .history-item-expr {
@@ -276,24 +265,32 @@
         .history-item-result {
             color: var(--color-primary);
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .history-item-actions {
             display: flex;
-            gap: 8px;
-            margin-left: 10px;
+            flex-direction: column;
+            gap: 4px;
+            margin-left: 8px;
+        }
+
+        @media (min-width: 480px) {
+            .history-item-actions {
+                flex-direction: row;
+            }
         }
 
         .history-btn {
-            padding: 6px 10px;
-            font-size: 12px;
+            padding: 4px 8px;
+            font-size: 11px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             background: var(--color-primary);
             color: white;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .history-btn:hover {
@@ -311,29 +308,30 @@
         .empty-history {
             text-align: center;
             color: var(--color-text-secondary);
-            padding: 40px 20px;
-            font-size: 14px;
+            padding: 30px 10px;
+            font-size: 13px;
         }
 
         .controls-section {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .btn-small {
-            padding: 10px 12px;
+            padding: 8px 10px;
             font-size: 12px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
             transition: all 0.2s ease;
+            flex: 1;
+            min-width: 0;
         }
 
         .btn-clear-history {
             background: var(--color-error);
             color: white;
-            flex: 1;
         }
 
         .btn-clear-history:hover {
@@ -342,16 +340,17 @@
 
         .copy-feedback {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 16px;
+            right: 16px;
             background: var(--color-success);
             color: white;
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: 8px;
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
             z-index: 1000;
+            font-size: 13px;
         }
 
         .copy-feedback.show {
@@ -414,6 +413,10 @@
     <div class="copy-feedback" id="copyFeedback">✓ Disalin ke clipboard</div>
 
     <script>
+        const HISTORY_KEY = 'calculator_history_v1';
+        const HISTORY_EXPIRE_KEY = 'calculator_history_expire_v1';
+        const HISTORY_MAX_AGE = 30 * 24 * 60 * 60 * 1000; // 30 hari
+
         const calculator = {
             display: '0',
             currentValue: 0,
@@ -448,7 +451,6 @@
                 });
 
                 displayEl.addEventListener('beforeinput', (e) => {
-                    // Izinkan editing normal (insert, delete, replace)
                     if (e.inputType === 'insertText') {
                         const char = e.data;
                         if (!/[\d.+-/*]/.test(char)) {
@@ -458,18 +460,13 @@
                 });
 
                 displayEl.addEventListener('input', (e) => {
-                    // Ambil teks raw dengan formatting - hapus titik pemisah ribuan saja
                     let text = e.target.textContent;
-                    let rawValue = text.replace(/\./g, ''); // Hapus pemisah ribuan
-                    
-                    // Pastikan format tetap valid
+                    let rawValue = text.replace(/\./g, '');
                     if (rawValue === '' || rawValue === '-') {
                         this.display = '0';
                     } else {
                         this.display = rawValue;
                     }
-                    
-                    // Update dengan format pemisah ribuan
                     this.updateDisplayWithFormat(displayEl);
                 });
 
@@ -477,7 +474,7 @@
                     this.shouldResetDisplay = true;
                 });
 
-                // Result display listener - smart input handling
+                // Result display listener
                 resultEl.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -490,7 +487,6 @@
                 });
 
                 resultEl.addEventListener('beforeinput', (e) => {
-                    // Izinkan hanya angka, operator, dan titik
                     if (e.inputType === 'insertText') {
                         const char = e.data;
                         if (!/[\d.+\-*/÷×−]/.test(char)) {
@@ -501,15 +497,12 @@
 
                 resultEl.addEventListener('input', (e) => {
                     let text = e.target.textContent;
-                    // Hapus pemisah ribuan untuk processing
                     let rawValue = text.replace(/\./g, '');
-                    // Format dengan pemisah ribuan otomatis
                     let formatted = this.formatExpressionWithNumbers(rawValue);
                     if (formatted !== text) {
                         const selection = window.getSelection();
                         const cursorPos = selection.focusOffset;
                         resultEl.textContent = formatted;
-                        // Restore cursor position dengan adjustment
                         try {
                             const range = document.createRange();
                             const sel = window.getSelection();
@@ -538,6 +531,13 @@
                 range.collapse(false);
                 sel.removeAllRanges();
                 sel.addRange(range);
+            },
+
+            handleBackspaceInDisplay(el) {
+                const text = el.textContent;
+                el.textContent = text.slice(0, -1);
+                const event = new Event('input', { bubbles: true });
+                el.dispatchEvent(event);
             },
 
             deleteLastChar() {
@@ -569,7 +569,7 @@
                 this.previousValue = parseFloat(this.display);
                 this.operation = op;
                 this.shouldResetDisplay = true;
-                document.getElementById('resultDisplay').textContent = `${this.previousValue} ${op}`;
+                document.getElementById('resultDisplay').textContent = `${this.formatDisplayValue(this.previousValue.toString())} ${op}`;
             },
 
             calculate() {
@@ -583,16 +583,16 @@
                 const expression = `${formattedPrev} ${this.operation} ${formattedCur}`;
                 let result;
 
-                switch(this.operation) {
+                switch (this.operation) {
                     case '+': result = this.previousValue + this.currentValue; break;
                     case '-': result = this.previousValue - this.currentValue; break;
                     case '*': result = this.previousValue * this.currentValue; break;
-                    case '/': 
+                    case '/':
                         if (this.currentValue === 0) {
                             alert('Tidak bisa membagi dengan 0');
                             return;
                         }
-                        result = this.previousValue / this.currentValue; 
+                        result = this.previousValue / this.currentValue;
                         break;
                     default: return;
                 }
@@ -600,11 +600,12 @@
                 result = Math.round(result * 100000000) / 100000000;
                 this.display = result.toString();
                 this.addToHistory(expression, result);
-                
-                // Set up untuk operasi berikutnya dengan hasil saat ini
+
                 this.previousValue = result;
                 this.currentValue = result;
                 this.shouldResetDisplay = true;
+                this.operation = null;
+                document.getElementById('resultDisplay').textContent = '';
                 this.updateDisplay();
             },
 
@@ -626,31 +627,28 @@
 
             formatDisplayValue(value) {
                 if (value === '0' || value === '') return '0';
-                
+
                 const num = parseFloat(value);
                 if (isNaN(num)) return value;
-                
-                // Tampilkan desimal jika ada
+
                 const parts = value.split('.');
                 let integer = parts[0];
                 let decimal = parts[1] ? '.' + parts[1] : '';
-                
-                // Format integer dengan pemisah ribuan (titik)
+
                 integer = Math.abs(parseInt(integer) || 0).toString();
                 integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                
+
                 if (value.startsWith('-') && value !== '-0') {
                     integer = '-' + integer;
                 }
-                
+
                 return integer + decimal;
             },
 
             formatExpressionWithNumbers(expr) {
-                // Format angka-angka dalam ekspresi dengan pemisah ribuan
                 let result = '';
                 let currentNumber = '';
-                
+
                 for (let char of expr) {
                     if (/[\d.]/.test(char)) {
                         currentNumber += char;
@@ -670,21 +668,19 @@
 
             evaluateExpression(expr) {
                 try {
-                    // Hapus pemisah ribuan dan ganti operator
                     let evalExpr = expr
-                        .replace(/\./g, '') // Hapus pemisah ribuan
+                        .replace(/\./g, '')
                         .replace(/÷/g, '/')
                         .replace(/×/g, '*')
                         .replace(/−/g, '-');
-                    
-                    // Evaluasi ekspresi
+
                     const result = eval(evalExpr);
-                    
+
                     if (result === Infinity || result === -Infinity || isNaN(result)) {
                         alert('Hasil tidak valid');
                         return;
                     }
-                    
+
                     const roundedResult = Math.round(result * 100000000) / 100000000;
                     this.display = roundedResult.toString();
                     this.operation = null;
@@ -701,38 +697,45 @@
                 const displayEl = document.getElementById('mainDisplay');
                 const formatted = this.formatDisplayValue(this.display);
                 displayEl.textContent = formatted;
+
+                displayEl.classList.remove('long', 'very-long');
+                if (formatted.length > 12 && formatted.length <= 18) {
+                    displayEl.classList.add('long');
+                } else if (formatted.length > 18) {
+                    displayEl.classList.add('very-long');
+                }
             },
 
             updateDisplayWithFormat(displayEl) {
                 const selection = window.getSelection();
                 const cursorPos = selection.focusOffset;
-                
+
                 const formatted = this.formatDisplayValue(this.display);
                 displayEl.textContent = formatted;
-                
-                // Restore cursor position dengan adjustment untuk pemisah
+
                 try {
                     const text = formatted;
-                    let adjustedPos = cursorPos;
-                    
-                    // Hitung berapa banyak pemisah ribuan ditambahkan sebelum cursor
-                    const rawDisplay = this.display;
-                    const beforeCursor = rawDisplay.substring(0, cursorPos);
-                    const dotsAddedCount = (beforeCursor.length - beforeCursor.replace(/\./g, '').length);
-                    adjustedPos = cursorPos + dotsAddedCount;
-                    
+                    let adjustedPos = Math.min(cursorPos, text.length);
+
                     const range = document.createRange();
                     const sel = window.getSelection();
                     if (displayEl.firstChild) {
-                        range.setStart(displayEl.firstChild, Math.min(adjustedPos, text.length));
+                        range.setStart(displayEl.firstChild, adjustedPos);
                     } else {
-                        range.setStart(displayEl, Math.min(adjustedPos, text.length));
+                        range.setStart(displayEl, adjustedPos);
                     }
                     range.collapse(true);
                     sel.removeAllRanges();
                     sel.addRange(range);
                 } catch (err) {
                     this.setCursorAtEnd(displayEl);
+                }
+
+                displayEl.classList.remove('long', 'very-long');
+                if (formatted.length > 12 && formatted.length <= 18) {
+                    displayEl.classList.add('long');
+                } else if (formatted.length > 18) {
+                    displayEl.classList.add('very-long');
                 }
             },
 
@@ -761,7 +764,7 @@
             },
 
             addToHistory(expression, result) {
-                const timestamp = new Date().toLocaleTimeString('id-ID');
+                const timestamp = new Date().toISOString();
                 const formattedResult = this.formatDisplayValue(result.toString());
                 const entry = {
                     expression,
@@ -781,20 +784,23 @@
                     return;
                 }
 
-                historyList.innerHTML = this.history.map((item, index) => `
-                    <div class="history-item">
-                        <div class="history-item-text">
-                            <span class="history-item-expr">${item.expression}</span>
-                            <span class="history-item-result">= ${item.displayResult}</span>
-                            <small style="color: var(--color-text-secondary); display: block; margin-top: 4px;">${item.timestamp}</small>
+                historyList.innerHTML = this.history.map((item, index) => {
+                    const time = new Date(item.timestamp).toLocaleString('id-ID');
+                    return `
+                        <div class="history-item">
+                            <div class="history-item-text">
+                                <span class="history-item-expr">${item.expression}</span>
+                                <span class="history-item-result">= ${item.displayResult}</span>
+                                <small style="color: var(--color-text-secondary); display: block; margin-top: 4px;">${time}</small>
+                            </div>
+                            <div class="history-item-actions">
+                                <button class="history-btn" onclick="calculator.useFromHistory(${index})">Pakai</button>
+                                <button class="history-btn" onclick="calculator.copyFromHistory(${index})">Salin</button>
+                                <button class="history-btn history-btn-delete" onclick="calculator.deleteHistory(${index})">Hapus</button>
+                            </div>
                         </div>
-                        <div class="history-item-actions">
-                            <button class="history-btn" onclick="calculator.useFromHistory(${index})">Pakai</button>
-                            <button class="history-btn" onclick="calculator.copyFromHistory(${index})">Salin</button>
-                            <button class="history-btn history-btn-delete" onclick="calculator.deleteHistory(${index})">Hapus</button>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             },
 
             useFromHistory(index) {
@@ -827,12 +833,41 @@
             },
 
             saveHistoryToStorage() {
-                // Menggunakan JavaScript variable, bukan localStorage
-                // Data akan tersimpan selama halaman aktif
+                try {
+                    const now = Date.now();
+                    const payload = {
+                        data: this.history,
+                        savedAt: now
+                    };
+                    localStorage.setItem(HISTORY_KEY, JSON.stringify(payload));
+                    localStorage.setItem(HISTORY_EXPIRE_KEY, (now + HISTORY_MAX_AGE).toString());
+                } catch (e) {
+                    console.error('Gagal simpan riwayat:', e);
+                }
             },
 
             loadHistoryFromStorage() {
-                // Load dari variable memory
+                try {
+                    const raw = localStorage.getItem(HISTORY_KEY);
+                    const expire = localStorage.getItem(HISTORY_EXPIRE_KEY);
+                    const now = Date.now();
+
+                    if (!raw || !expire) return;
+
+                    if (now > parseInt(expire, 10)) {
+                        localStorage.removeItem(HISTORY_KEY);
+                        localStorage.removeItem(HISTORY_EXPIRE_KEY);
+                        return;
+                    }
+
+                    const payload = JSON.parse(raw);
+                    if (payload && Array.isArray(payload.data)) {
+                        this.history = payload.data;
+                        this.renderHistory();
+                    }
+                } catch (e) {
+                    console.error('Gagal load riwayat:', e);
+                }
             },
 
             showFeedback(message) {
@@ -845,13 +880,16 @@
             }
         };
 
-        // Inisialisasi kalkulator
         window.addEventListener('DOMContentLoaded', () => {
             calculator.init();
         });
 
-        // Support keyboard input
         document.addEventListener('keydown', (e) => {
+            const active = document.activeElement;
+            const isTypingInEditable =
+                active && (active.getAttribute('contenteditable') === 'true' || active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+            if (isTypingInEditable) return;
+
             if (e.key >= '0' && e.key <= '9') calculator.appendNumber(e.key);
             if (e.key === '+') { e.preventDefault(); calculator.appendOperator('+'); }
             if (e.key === '-') { e.preventDefault(); calculator.appendOperator('-'); }
