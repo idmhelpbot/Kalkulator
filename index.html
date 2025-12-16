@@ -27,13 +27,13 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 20px 12px 60px;
             color: var(--color-text-primary);
         }
 
         .container {
             max-width: 480px;
-            margin: 0 auto;
+            margin: 0 auto 16px;
             display: grid;
             grid-template-columns: 1fr;
             gap: 16px;
@@ -356,6 +356,82 @@
         .copy-feedback.show {
             opacity: 1;
         }
+
+        /* Modal growth: full screen di HP, dialog di desktop */
+        #growthModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        #growthModal .modal-inner {
+            background: #fff;
+            max-width: 960px;
+            width: 95%;
+            max-height: 90vh;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #growthModal .modal-header {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        #growthModal .modal-header button {
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #growthFrame {
+            border: none;
+            width: 100%;
+            flex: 1;
+            min-height: 60vh;
+        }
+
+        /* full-screen untuk mobile */
+        @media (max-width: 767px) {
+            #growthModal .modal-inner {
+                width: 100vw;
+                height: 100vh;
+                max-width: 100vw;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            #growthFrame {
+                min-height: calc(100vh - 44px);
+            }
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 8px 12px;
+            background: rgba(19, 52, 59, 0.92);
+            color: #f5f5f5;
+            font-size: 11px;
+            text-align: center;
+            z-index: 1500;
+            backdrop-filter: blur(4px);
+        }
     </style>
 </head>
 <body>
@@ -397,6 +473,7 @@
                 <button class="btn-small btn-copy" onclick="calculator.copyDisplay()">📋 Salin Display</button>
                 <button class="btn-small btn-copy" onclick="calculator.pasteDisplay()">📌 Tempel</button>
                 <button class="btn-small" style="background: rgba(192, 21, 47, 0.1); color: var(--color-error); border: 2px solid var(--color-error);" onclick="calculator.deleteLastChar()">⌫ Hapus 1</button>
+                <button class="btn-small" style="background: rgba(33, 128, 141, 0.15); color: var(--color-primary);" onclick="openGrowth()">📈 Growth</button>
             </div>
         </div>
 
@@ -410,7 +487,23 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <div class="footer">
+        © 2025 IDM Help Bot - All rights reserved
+    </div>
+
     <div class="copy-feedback" id="copyFeedback">✓ Disalin ke clipboard</div>
+
+    <!-- Modal Growth -->
+    <div id="growthModal">
+        <div class="modal-inner">
+            <div class="modal-header">
+                <span>📈 Growth</span>
+                <button onclick="closeGrowth()">✕</button>
+            </div>
+            <iframe id="growthFrame" src="growth.html" title="Growth"></iframe>
+        </div>
+    </div>
 
     <script>
         const HISTORY_KEY = 'calculator_history_v1';
@@ -439,7 +532,6 @@
                 const displayEl = document.getElementById('mainDisplay');
                 const resultEl = document.getElementById('resultDisplay');
 
-                // Main display listener - smart input handling
                 displayEl.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' || e.key === '=') {
                         e.preventDefault();
@@ -474,7 +566,6 @@
                     this.shouldResetDisplay = true;
                 });
 
-                // Result display listener
                 resultEl.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -879,6 +970,16 @@
                 }, 2000);
             }
         };
+
+        function openGrowth() {
+            const modal = document.getElementById('growthModal');
+            modal.style.display = 'flex';
+        }
+
+        function closeGrowth() {
+            const modal = document.getElementById('growthModal');
+            modal.style.display = 'none';
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             calculator.init();

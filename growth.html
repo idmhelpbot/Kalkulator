@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kalkulator Growth & Achievement</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #38bdf8 0, #0f172a 55%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 16px 8px;
+      color: #0f172a;
+    }
+    .shell {
+      width: 100%;
+      max-width: 440px;
+    }
+    .app-title {
+      color: #e5f2ff;
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .app-sub {
+      color: #cbd5f5;
+      font-size: 12px;
+      margin: 0 0 12px;
+      text-align: center;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 18px 16px 16px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .card-inner {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 14px 14px 12px;
+    }
+    label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #0f172a;
+      font-weight: 500;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .field {
+      flex: 1;
+    }
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 9px;
+      border: 1px solid #cbd5f5;
+      font-size: 14px;
+      outline: none;
+      background: #f8fafc;
+    }
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+      background: #ffffff;
+    }
+    .btn-primary {
+      width: 100%;
+      margin-top: 2px;
+      margin-bottom: 10px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn-primary:active {
+      transform: translateY(1px);
+      filter: brightness(0.95);
+    }
+    .section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: #64748b;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    /* RESULT BARIS 1 LINE */
+    .result-box {
+      margin-top: 4px;
+      padding: 8px 9px;
+      border-radius: 9px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 13px;
+      color: #0f172a;
+
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      white-space: nowrap;
+    }
+    .result-text {
+      flex: 1 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-ghost {
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: none;
+      background: #1d4ed8;
+      color: #e5edff;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-ghost:active {
+      transform: translateY(1px);
+      filter: brightness(0.95);
+    }
+
+    .formula {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #6b7280;
+      line-height: 1.35;
+    }
+    .formula strong {
+      color: #111827;
+      font-weight: 600;
+    }
+    .footer {
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    @media (min-width: 480px) {
+      body {
+        padding: 24px 24px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="app-title">Growth & Achievement Calculator</div>
+    <p class="app-sub">Masukkan angka, lihat hasil & rumus, lalu salin untuk laporan.</p>
+
+    <div class="card">
+      <div class="card-inner">
+        <div class="row">
+          <div class="field">
+            <label for="bulanLalu">Bulan lalu</label>
+            <input id="bulanLalu" type="text" value="8.282.431" oninput="onInputFormat(this)">
+          </div>
+          <div class="field">
+            <label for="bulanIni">Bulan ini</label>
+            <input id="bulanIni" type="text" value="7.343.484" oninput="onInputFormat(this)">
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="hitung()">Hitung</button>
+
+        <!-- Growth -->
+        <div class="section-title">Growth</div>
+        <div class="result-box">
+          <span id="growthText" class="result-text"></span>
+          <button class="btn-ghost" onclick="salinAngka('growthText')">Salin</button>
+        </div>
+        <div id="growthFormula" class="formula"></div>
+
+        <!-- Achievement -->
+        <div class="section-title" style="margin-top:10px;">Achievement</div>
+        <div class="result-box">
+          <span id="achText" class="result-text"></span>
+          <button class="btn-ghost" onclick="salinAngka('achText')">Salin</button>
+        </div>
+        <div id="achFormula" class="formula"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    © 2025 IDM Help Bot - All rights reserved
+  </div>
+
+  <script>
+    function parseNumber(str) {
+      return Number(str.replace(/\./g, '').replace(/,/g, ''));
+    }
+
+    function formatNumber(n) {
+      if (isNaN(n)) return '';
+      return n.toLocaleString('id-ID');
+    }
+
+    function onInputFormat(el) {
+      const raw = el.value.replace(/\./g, '').replace(/,/g, '');
+      if (raw === '') {
+        el.dataset.raw = '';
+        return;
+      }
+      const num = parseInt(raw, 10);
+      if (!isNaN(num)) {
+        el.dataset.raw = num;
+        el.value = formatNumber(num);
+      }
+    }
+
+    function hitung() {
+      const last = parseNumber(document.getElementById('bulanLalu').value || '0');
+      const current = parseNumber(document.getElementById('bulanIni').value || '0');
+
+      const growthEl = document.getElementById('growthText');
+      const achEl = document.getElementById('achText');
+      const growthFormulaEl = document.getElementById('growthFormula');
+      const achFormulaEl = document.getElementById('achFormula');
+
+      if (!last || !current) {
+        growthEl.textContent = 'Harap isi kedua angka.';
+        achEl.textContent = '';
+        growthEl.dataset.copy = '';
+        achEl.dataset.copy = '';
+        growthFormulaEl.textContent = '';
+        achFormulaEl.textContent = '';
+        return;
+      }
+
+      const growth = ((current - last) / last) * 100;
+      const achievement = (current / last) * 100;
+
+      const growthSign = growth > 0 ? '+' : '';
+      const growthPercent = `${growthSign}${growth.toFixed(0)}%`;
+      const achPercent = `${achievement.toFixed(0)}%`;
+
+      const lastFmt = formatNumber(last);
+      const currFmt = formatNumber(current);
+
+      // DIUBAH: tidak pakai "Growth=" di depan
+      const growthDisplay = `${lastFmt}_${currFmt}_${growthPercent}`;
+      const achDisplay    = `Ach = ${lastFmt}_${currFmt}_${achPercent}`;
+
+      growthEl.textContent = growthDisplay;
+      achEl.textContent = achDisplay;
+
+      growthEl.dataset.copy = `${lastFmt}_${currFmt}_${growthPercent}`;
+      achEl.dataset.copy = `${lastFmt}_${currFmt}_${achPercent}`;
+
+      growthFormulaEl.innerHTML =
+        `<strong>Rumus:</strong> ((BulanIni − BulanLalu) / BulanLalu) × 100<br>` +
+        `= ((${currFmt} − ${lastFmt}) / ${lastFmt}) × 100 = ${growthPercent}`;
+      achFormulaEl.innerHTML =
+        `<strong>Rumus:</strong> (BulanIni / BulanLalu) × 100<br>` +
+        `= (${currFmt} / ${lastFmt}) × 100 = ${achPercent}`;
+    }
+
+    async function salinAngka(id) {
+      const el = document.getElementById(id);
+      const text = el.dataset.copy || '';
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('Tersalin: ' + text);
+      } catch (e) {
+        console.error(e);
+        alert('Gagal menyalin, coba manual.');
+      }
+    }
+
+    // hitung awal saat page dibuka
+    hitung();
+  </script>
+</body>
+</html>
