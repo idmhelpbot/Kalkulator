@@ -210,91 +210,92 @@
     © 2025 IDM Help Bot - All rights reserved
   </div>
 
-  <script>
-    function parseNumber(str) {
-      return Number(str.replace(/\./g, '').replace(/,/g, ''));
+ <script>
+  function parseNumber(str) {
+    return Number(str.replace(/\./g, '').replace(/,/g, ''));
+  }
+
+  function formatNumber(n) {
+    if (isNaN(n)) return '';
+    return n.toLocaleString('id-ID');
+  }
+
+  function onInputFormat(el) {
+    const raw = el.value.replace(/\./g, '').replace(/,/g, '');
+    if (raw === '') {
+      el.dataset.raw = '';
+      return;
+    }
+    const num = parseInt(raw, 10);
+    if (!isNaN(num)) {
+      el.dataset.raw = num;
+      el.value = formatNumber(num);
+    }
+  }
+
+  function hitung() {
+    const last = parseNumber(document.getElementById('bulanLalu').value || '0');
+    const current = parseNumber(document.getElementById('bulanIni').value || '0');
+
+    const growthEl = document.getElementById('growthText');
+    const achEl = document.getElementById('achText');
+    const growthFormulaEl = document.getElementById('growthFormula');
+    const achFormulaEl = document.getElementById('achFormula');
+
+    if (!last || !current) {
+      growthEl.textContent = 'Harap isi kedua angka.';
+      achEl.textContent = '';
+      growthEl.dataset.copy = '';
+      achEl.dataset.copy = '';
+      growthFormulaEl.textContent = '';
+      achFormulaEl.textContent = '';
+      return;
     }
 
-    function formatNumber(n) {
-      if (isNaN(n)) return '';
-      return n.toLocaleString('id-ID');
+    const growth = ((current - last) / last) * 100;
+    const achievement = (current / last) * 100;
+
+    const growthSign = growth > 0 ? '+' : '';
+    const growthPercent = `${growthSign}${growth.toFixed(0)}%`;
+    const achPercent = `${achievement.toFixed(0)}%`;
+
+    const lastFmt = formatNumber(last);
+    const currFmt = formatNumber(current);
+
+    // TANPA "Growth=" DAN TANPA "Ach ="
+    const growthDisplay = `${lastFmt}_${currFmt}_${growthPercent}`;
+    const achDisplay    = `${lastFmt}_${currFmt}_${achPercent}`;
+
+    growthEl.textContent = growthDisplay;
+    achEl.textContent = achDisplay;
+
+    growthEl.dataset.copy = `${lastFmt}_${currFmt}_${growthPercent}`;
+    achEl.dataset.copy = `${lastFmt}_${currFmt}_${achPercent}`;
+
+    growthFormulaEl.innerHTML =
+      `<strong>Rumus:</strong> ((BulanIni − BulanLalu) / BulanLalu) × 100<br>` +
+      `= ((${currFmt} − ${lastFmt}) / ${lastFmt}) × 100 = ${growthPercent}`;
+    achFormulaEl.innerHTML =
+      `<strong>Rumus:</strong> (BulanIni / BulanLalu) × 100<br>` +
+      `= (${currFmt} / ${lastFmt}) × 100 = ${achPercent}`;
+  }
+
+  async function salinAngka(id) {
+    const el = document.getElementById(id);
+    const text = el.dataset.copy || '';
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('Tersalin: ' + text);
+    } catch (e) {
+      console.error(e);
+      alert('Gagal menyalin, coba manual.');
     }
+  }
 
-    function onInputFormat(el) {
-      const raw = el.value.replace(/\./g, '').replace(/,/g, '');
-      if (raw === '') {
-        el.dataset.raw = '';
-        return;
-      }
-      const num = parseInt(raw, 10);
-      if (!isNaN(num)) {
-        el.dataset.raw = num;
-        el.value = formatNumber(num);
-      }
-    }
+  // hitung awal saat page dibuka
+  hitung();
+</script>
 
-    function hitung() {
-      const last = parseNumber(document.getElementById('bulanLalu').value || '0');
-      const current = parseNumber(document.getElementById('bulanIni').value || '0');
-
-      const growthEl = document.getElementById('growthText');
-      const achEl = document.getElementById('achText');
-      const growthFormulaEl = document.getElementById('growthFormula');
-      const achFormulaEl = document.getElementById('achFormula');
-
-      if (!last || !current) {
-        growthEl.textContent = 'Harap isi kedua angka.';
-        achEl.textContent = '';
-        growthEl.dataset.copy = '';
-        achEl.dataset.copy = '';
-        growthFormulaEl.textContent = '';
-        achFormulaEl.textContent = '';
-        return;
-      }
-
-      const growth = ((current - last) / last) * 100;
-      const achievement = (current / last) * 100;
-
-      const growthSign = growth > 0 ? '+' : '';
-      const growthPercent = `${growthSign}${growth.toFixed(0)}%`;
-      const achPercent = `${achievement.toFixed(0)}%`;
-
-      const lastFmt = formatNumber(last);
-      const currFmt = formatNumber(current);
-
-      // DIUBAH: tidak pakai "Growth=" di depan
-      const growthDisplay = `${lastFmt}_${currFmt}_${growthPercent}`;
-      const achDisplay    = `Ach = ${lastFmt}_${currFmt}_${achPercent}`;
-
-      growthEl.textContent = growthDisplay;
-      achEl.textContent = achDisplay;
-
-      growthEl.dataset.copy = `${lastFmt}_${currFmt}_${growthPercent}`;
-      achEl.dataset.copy = `${lastFmt}_${currFmt}_${achPercent}`;
-
-      growthFormulaEl.innerHTML =
-        `<strong>Rumus:</strong> ((BulanIni − BulanLalu) / BulanLalu) × 100<br>` +
-        `= ((${currFmt} − ${lastFmt}) / ${lastFmt}) × 100 = ${growthPercent}`;
-      achFormulaEl.innerHTML =
-        `<strong>Rumus:</strong> (BulanIni / BulanLalu) × 100<br>` +
-        `= (${currFmt} / ${lastFmt}) × 100 = ${achPercent}`;
-    }
-
-    async function salinAngka(id) {
-      const el = document.getElementById(id);
-      const text = el.dataset.copy || '';
-      if (!text) return;
-      try {
-        await navigator.clipboard.writeText(text);
-        alert('Tersalin: ' + text);
-      } catch (e) {
-        console.error(e);
-        alert('Gagal menyalin, coba manual.');
-      }
-    }
-
-    // hitung awal saat page dibuka
-    hitung();
-  </script>
 </body>
 </html>
