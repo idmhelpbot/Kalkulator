@@ -20,7 +20,7 @@
     }
     .shell {
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
     }
     .app-title {
       color: #e5f2ff;
@@ -62,10 +62,11 @@
     }
     .field {
       flex: 1;
+      position: relative;
     }
     input {
       width: 100%;
-      padding: 8px 10px;
+      padding: 8px 30px 8px 10px;
       border-radius: 9px;
       border: 1px solid #cbd5f5;
       font-size: 14px;
@@ -77,10 +78,28 @@
       box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
       background: #ffffff;
     }
+    .clear-input {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: #dc2626;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .clear-input:hover {
+      color: #b91c1c;
+    }
+
     .btn-primary {
       width: 100%;
       margin-top: 2px;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       padding: 9px 12px;
       border-radius: 999px;
       border: none;
@@ -94,6 +113,24 @@
       transform: translateY(1px);
       filter: brightness(0.95);
     }
+
+    .btn-secondary {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #fecaca;
+      background: #fee2e2;
+      color: #b91c1c;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn-secondary:active {
+      transform: translateY(1px);
+      filter: brightness(0.98);
+    }
+
     .section-title {
       font-size: 11px;
       text-transform: uppercase;
@@ -103,7 +140,6 @@
       margin-bottom: 4px;
     }
 
-    /* RESULT BARIS 1 LINE */
     .result-box {
       margin-top: 4px;
       padding: 8px 9px;
@@ -113,11 +149,9 @@
       font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 13px;
       color: #0f172a;
-
       display: flex;
       align-items: center;
       gap: 8px;
-
       white-space: nowrap;
     }
     .result-text {
@@ -141,7 +175,6 @@
       transform: translateY(1px);
       filter: brightness(0.95);
     }
-
     .formula {
       margin-top: 4px;
       font-size: 11px;
@@ -152,9 +185,47 @@
       color: #111827;
       font-weight: 600;
     }
+
+    .history-box {
+      margin-top: 10px;
+      padding: 10px 10px 8px;
+      border-radius: 10px;
+      background: #0f172a;
+      color: #e5e7eb;
+      font-size: 11px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .history-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    .history-item {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+      cursor: pointer;
+    }
+    .history-item:last-child {
+      border-bottom: none;
+    }
+    .history-item:hover {
+      background: rgba(148, 163, 184, 0.15);
+    }
+    .history-line-main {
+      font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+    }
+    .history-line-sub {
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
     .footer {
       width: 100%;
-      max-width: 440px;
+      max-width: 480px;
       text-align: center;
       margin-top: 10px;
       font-size: 11px;
@@ -177,15 +248,18 @@
         <div class="row">
           <div class="field">
             <label for="bulanLalu">Bulan lalu</label>
-            <input id="bulanLalu" type="text" value="8.282.431" oninput="onInputFormat(this)">
+            <input id="bulanLalu" type="text" oninput="onInputFormat(this)">
+            <button class="clear-input" onclick="clearField('bulanLalu')">&times;</button>
           </div>
           <div class="field">
             <label for="bulanIni">Bulan ini</label>
-            <input id="bulanIni" type="text" value="7.343.484" oninput="onInputFormat(this)">
+            <input id="bulanIni" type="text" oninput="onInputFormat(this)">
+            <button class="clear-input" onclick="clearField('bulanIni')">&times;</button>
           </div>
         </div>
 
-        <button class="btn-primary" onclick="hitung()">Hitung</button>
+        <button class="btn-primary" id="btnHitung" onclick="hitung()">Hitung</button>
+        <button class="btn-secondary" onclick="resetSemua()">Hapus semua</button>
 
         <!-- Growth -->
         <div class="section-title">Growth</div>
@@ -202,6 +276,12 @@
           <button class="btn-ghost" onclick="salinAngka('achText')">Salin</button>
         </div>
         <div id="achFormula" class="formula"></div>
+
+        <!-- HISTORY -->
+        <div class="history-box" id="historyBox">
+          <div class="history-title">History 30 hari terakhir (klik untuk pakai lagi)</div>
+          <div id="historyList"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -210,92 +290,238 @@
     © 2025 IDM Help Bot - All rights reserved
   </div>
 
- <script>
-  function parseNumber(str) {
-    return Number(str.replace(/\./g, '').replace(/,/g, ''));
-  }
+  <script>
+    const HISTORY_KEY = 'growth_ach_history_v3';
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
-  function formatNumber(n) {
-    if (isNaN(n)) return '';
-    return n.toLocaleString('id-ID');
-  }
-
-  function onInputFormat(el) {
-    const raw = el.value.replace(/\./g, '').replace(/,/g, '');
-    if (raw === '') {
-      el.dataset.raw = '';
-      return;
+    function parseNumber(str) {
+      return Number(str.replace(/\./g, '').replace(/,/g, ''));
     }
-    const num = parseInt(raw, 10);
-    if (!isNaN(num)) {
-      el.dataset.raw = num;
-      el.value = formatNumber(num);
+
+    function formatNumber(n) {
+      if (isNaN(n)) return '';
+      return n.toLocaleString('id-ID');
     }
-  }
 
-  function hitung() {
-    const last = parseNumber(document.getElementById('bulanLalu').value || '0');
-    const current = parseNumber(document.getElementById('bulanIni').value || '0');
+    function onInputFormat(el) {
+      const raw = el.value.replace(/\./g, '').replace(/,/g, '');
+      if (raw === '') {
+        el.dataset.raw = '';
+        return;
+      }
+      const num = parseInt(raw, 10);
+      if (!isNaN(num)) {
+        el.dataset.raw = num;
+        el.value = formatNumber(num);
+      }
+    }
 
-    const growthEl = document.getElementById('growthText');
-    const achEl = document.getElementById('achText');
-    const growthFormulaEl = document.getElementById('growthFormula');
-    const achFormulaEl = document.getElementById('achFormula');
+    function hitung(fromHistoryEntry) {
+      let last, current;
 
-    if (!last || !current) {
-      growthEl.textContent = 'Harap isi kedua angka.';
+      if (fromHistoryEntry) {
+        // dari history, pakai angka mentah yang sudah disimpan
+        last = fromHistoryEntry.lastRaw;
+        current = fromHistoryEntry.currRaw;
+        // isi input juga
+        document.getElementById('bulanLalu').value = formatNumber(last);
+        document.getElementById('bulanIni').value = formatNumber(current);
+      } else {
+        last = parseNumber(document.getElementById('bulanLalu').value || '0');
+        current = parseNumber(document.getElementById('bulanIni').value || '0');
+      }
+
+      const growthEl = document.getElementById('growthText');
+      const achEl = document.getElementById('achText');
+      const growthFormulaEl = document.getElementById('growthFormula');
+      const achFormulaEl = document.getElementById('achFormula');
+
+      if (!last || !current) {
+        growthEl.textContent = 'Harap isi kedua angka.';
+        achEl.textContent = '';
+        growthEl.dataset.copy = '';
+        achEl.dataset.copy = '';
+        growthFormulaEl.textContent = '';
+        achFormulaEl.textContent = '';
+        return;
+      }
+
+      const growth = ((current - last) / last) * 100;
+      const achievement = (current / last) * 100;
+
+      const growthSign = growth > 0 ? '+' : '';
+      const growthPercent = `${growthSign}${growth.toFixed(0)}%`;
+      const achPercent = `${achievement.toFixed(0)}%`;
+
+      const lastFmt = formatNumber(last);
+      const currFmt = formatNumber(current);
+
+      const growthDisplay = `${lastFmt}_${currFmt}_${growthPercent}`;
+      const achDisplay    = `${lastFmt}_${currFmt}_${achPercent}`;
+
+      growthEl.textContent = growthDisplay;
+      achEl.textContent = achDisplay;
+
+      growthEl.dataset.copy = growthDisplay;
+      achEl.dataset.copy = achDisplay;
+
+      growthFormulaEl.innerHTML =
+        `<strong>Rumus:</strong> ((BulanIni − BulanLalu) / BulanLalu) × 100<br>` +
+        `= ((${currFmt} − ${lastFmt}) / ${lastFmt}) × 100 = ${growthPercent}`;
+      achFormulaEl.innerHTML =
+        `<strong>Rumus:</strong> (BulanIni / BulanLalu) × 100<br>` +
+        `= (${currFmt} / ${lastFmt}) × 100 = ${achPercent}`;
+
+      // kalau dipanggil dari history, jangan duplikat entry
+      if (!fromHistoryEntry) {
+        simpanKeHistory({
+          ts: Date.now(),
+          lastRaw: last,
+          currRaw: current,
+          growthLine: growthDisplay,
+          achLine: achDisplay
+        });
+        renderHistory();
+      }
+    }
+
+    async function salinAngka(id) {
+      const el = document.getElementById(id);
+      const text = el.dataset.copy || '';
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('Tersalin: ' + text);
+      } catch (e) {
+        console.error(e);
+        alert('Gagal menyalin, coba manual.');
+      }
+    }
+
+    function clearField(id) {
+      const input = document.getElementById(id);
+      input.value = '';
+      input.dataset.raw = '';
+    }
+
+    function resetSemua() {
+      clearField('bulanLalu');
+      clearField('bulanIni');
+
+      const growthEl = document.getElementById('growthText');
+      const achEl = document.getElementById('achText');
+      const growthFormulaEl = document.getElementById('growthFormula');
+      const achFormulaEl = document.getElementById('achFormula');
+
+      growthEl.textContent = '';
       achEl.textContent = '';
       growthEl.dataset.copy = '';
       achEl.dataset.copy = '';
       growthFormulaEl.textContent = '';
       achFormulaEl.textContent = '';
-      return;
     }
 
-    const growth = ((current - last) / last) * 100;
-    const achievement = (current / last) * 100;
-
-    const growthSign = growth > 0 ? '+' : '';
-    const growthPercent = `${growthSign}${growth.toFixed(0)}%`;
-    const achPercent = `${achievement.toFixed(0)}%`;
-
-    const lastFmt = formatNumber(last);
-    const currFmt = formatNumber(current);
-
-    // TANPA "Growth=" DAN TANPA "Ach ="
-    const growthDisplay = `${lastFmt}_${currFmt}_${growthPercent}`;
-    const achDisplay    = `${lastFmt}_${currFmt}_${achPercent}`;
-
-    growthEl.textContent = growthDisplay;
-    achEl.textContent = achDisplay;
-
-    growthEl.dataset.copy = `${lastFmt}_${currFmt}_${growthPercent}`;
-    achEl.dataset.copy = `${lastFmt}_${currFmt}_${achPercent}`;
-
-    growthFormulaEl.innerHTML =
-      `<strong>Rumus:</strong> ((BulanIni − BulanLalu) / BulanLalu) × 100<br>` +
-      `= ((${currFmt} − ${lastFmt}) / ${lastFmt}) × 100 = ${growthPercent}`;
-    achFormulaEl.innerHTML =
-      `<strong>Rumus:</strong> (BulanIni / BulanLalu) × 100<br>` +
-      `= (${currFmt} / ${lastFmt}) × 100 = ${achPercent}`;
-  }
-
-  async function salinAngka(id) {
-    const el = document.getElementById(id);
-    const text = el.dataset.copy || '';
-    if (!text) return;
-    try {
-      await navigator.clipboard.writeText(text);
-      alert('Tersalin: ' + text);
-    } catch (e) {
-      console.error(e);
-      alert('Gagal menyalin, coba manual.');
+    function bisaHitung() {
+      const v1 = document.getElementById('bulanLalu').value.trim();
+      const v2 = document.getElementById('bulanIni').value.trim();
+      return v1 !== '' && v2 !== '';
     }
-  }
 
-  // hitung awal saat page dibuka
-  hitung();
-</script>
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        if (bisaHitung()) {
+          e.preventDefault();
+          hitung();
+        }
+      }
+    });
 
+    function ambilHistoryRaw() {
+      try {
+        const data = localStorage.getItem(HISTORY_KEY);
+        if (!data) return [];
+        const parsed = JSON.parse(data);
+        if (!Array.isArray(parsed)) return [];
+        return parsed;
+      } catch (e) {
+        console.error('Gagal parse history', e);
+        return [];
+      }
+    }
+
+    function simpanHistoryRaw(list) {
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+      } catch (e) {
+        console.error('Gagal simpan history', e);
+      }
+    }
+
+    function bersihkanHistoryKedaluwarsa(list) {
+      const now = Date.now();
+      return list.filter(item => {
+        return item && typeof item.ts === 'number' && (now - item.ts) <= THIRTY_DAYS_MS;
+      });
+    }
+
+    function simpanKeHistory(entry) {
+      let list = ambilHistoryRaw();
+      list.push(entry); // { ts, lastRaw, currRaw, growthLine, achLine }
+      list = bersihkanHistoryKedaluwarsa(list);
+      if (list.length > 100) {
+        list = list.slice(list.length - 100);
+      }
+      simpanHistoryRaw(list);
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('historyList');
+      if (!container) return;
+      let list = ambilHistoryRaw();
+      list = bersihkanHistoryKedaluwarsa(list);
+      simpanHistoryRaw(list);
+
+      if (!list.length) {
+        container.innerHTML = '<div style="color:#6b7280;font-size:10px;">Belum ada history tersimpan.</div>';
+        return;
+      }
+
+      const sorted = list.slice().sort((a, b) => b.ts - a.ts);
+
+      container.innerHTML = sorted.map((item, index) => {
+        const d = new Date(item.ts);
+        const tgl = d.toLocaleDateString('id-ID');
+        const jam = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        // simpan index di data-index untuk diambil saat klik
+        return `
+          <div class="history-item"
+               data-index="${index}">
+            <div class="history-line-main">${item.growthLine}</div>
+            <div class="history-line-main">${item.achLine}</div>
+            <div class="history-line-sub">${tgl} ${jam}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // klik di history -> isi input + hitung lagi[web:84][web:87]
+    document.getElementById('historyList').addEventListener('click', function (e) {
+      const item = e.target.closest('.history-item');
+      if (!item) return;
+      const idx = parseInt(item.dataset.index, 10);
+      if (isNaN(idx)) return;
+
+      let list = ambilHistoryRaw();
+      list = bersihkanHistoryKedaluwarsa(list);
+      const sorted = list.slice().sort((a, b) => b.ts - a.ts);
+      const entry = sorted[idx];
+      if (!entry) return;
+
+      // panggil hitung dengan entry supaya tidak nambah history baru
+      hitung(entry);
+    });
+
+    renderHistory();
+  </script>
 </body>
 </html>
